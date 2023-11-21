@@ -10,7 +10,7 @@ if (process.env.NODE_ENV === "development") {
 }
 
 const corsOptions = {
-  origin: `http://${process.env.HOST}:${process.env.PORT}`,
+  origin: `http://${process.env.HOST}:${process.env.CORS_PORT}`,
   methods: "GET,POST,PATCH,PUT,DELETE",
 };
 
