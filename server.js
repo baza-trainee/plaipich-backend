@@ -4,16 +4,12 @@ const app = require(`./app`);
 
 dotenv.config({ path: `./.env` });
 
-mongoose
-  .connect(process.env.CONNECTION_STRING, {
-    useNewUrlParser: true,
-  })
-  .then(() => {
-    console.log("DB connection successful!");
-  });
+mongoose.connect(process.env.CONNECTION_STRING, {}).then(() => {
+  console.log("DB connection successful!");
+});
 
 // Start Server
-const port = process.env.PORT
+const port = process.env.PORT;
 const server = app.listen(port, () => {
   console.log(`We are waiting for the summer... At http://localhost:${port}`);
 });
