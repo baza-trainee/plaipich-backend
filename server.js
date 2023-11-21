@@ -10,8 +10,9 @@ mongoose.connect(process.env.CONNECTION_STRING, {}).then(() => {
 
 // Start Server
 const port = process.env.PORT;
+const host = process.env.HOST;
 const server = app.listen(port, () => {
-  console.log(`We are waiting for the summer... At http://localhost:${port}`);
+  console.log(`We are waiting for the summer... At http://${host}:${port}`);
 });
 
 process.on("unhandledRejection", (error) => {
