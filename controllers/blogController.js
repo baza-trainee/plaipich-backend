@@ -1,46 +1,43 @@
-const Blog = require('../models/blogModel');
+const Blog = require("../models/blogModel");
+const catchAsync = require("../utils/cathAsync");
+const AppError = require("../utils/appError");
 
-exports.createBlogPost = async (req, res) => {
-  try {
-    const blogPost = await Blog.create(req.body);
-    res.status(201).json(blogPost);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
+exports.createBlogPost = catchAsync(async (req, res) => {
+  const blogPost = await Blog.create(req.body);
+  res.status(201).json(blogPost);
+});
 
-exports.getAllBlogPosts = async (req, res) => {
-  try {
-    const blogPosts = await Blog.find();
-    res.status(200).json(blogPosts);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
+exports.getAllBlogPosts = catchAsync(async (req, res) => {
+  const blogPosts = await Blog.find();
+  res.status(200).json(blogPosts);
+});
 
-exports.getBlogPostById = async (req, res) => {
-  try {
-    const blogPost = await Blog.findById(req.params.id);
-    res.status(200).json(blogPost);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
+exports.getBlogPostById = catchAsync(async (req, res, next) => {
+  const blogPost = await Blog.findById(req.params.id);
 
-exports.updateBlogPost = async (req, res) => {
-  try {
-    const blogPost = await Blog.findByIdAndUpdate(req.params.id, req.body, { new: true });
-    res.status(200).json(blogPost);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
+  if (!blogPost) return next(new AppError("No blog with such id"), 404);
 
-exports.deleteBlogPost = async (req, res) => {
-  try {
-    await Blog.findByIdAndDelete(req.params.id);
-    res.status(204).end();
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
+  res.status(200).json(blogPost);
+});
+
+exports.updateBlogPost = catchAsync(async (req, res, next) => {
+  const blogPost = await Blog.findByIdAndUpdate(req.params.id, req.body, {
+    new: true,
+    runValidators: true,
+  });
+
+  if (!blogPost) return next(new AppError("No blog with such id"), 404);
+
+  res.status(200).json(blogPost);
+});
+
+exports.deleteBlogPost = catchAsync(async (req, res, next) => {
+  const blogPost = await Blog.findByIdAndDelete(req.params.id);
+
+  if (!blogPost) return next(new AppError("No blog with such id"), 404);
+
+  res.status(204).json({
+    status: "deleted",
+    data: null,
+  });
+});

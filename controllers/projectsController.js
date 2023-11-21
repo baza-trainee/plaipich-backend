@@ -1,46 +1,43 @@
-const Projects = require('../models/projectsModel');
+const Projects = require("../models/projectsModel");
+const catchAsync = require("../utils/cathAsync");
+const AppError = require("../utils/appError");
 
-exports.createProject = async (req, res) => {
-  try {
-    const project = await Projects.create(req.body);
-    res.status(201).json(project);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
+exports.createProject = catchAsync(async (req, res) => {
+  const project = await Projects.create(req.body);
+  res.status(201).json(project);
+});
 
-exports.getAllProjects = async (req, res) => {
-  try {
-    const projects = await Projects.find();
-    res.status(200).json(projects);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
+exports.getAllProjects = catchAsync(async (req, res) => {
+  const projects = await Projects.find();
+  res.status(200).json(projects);
+});
 
-exports.getProjectById = async (req, res) => {
-  try {
-    const project = await Projects.findById(req.params.id);
-    res.status(200).json(project);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
+exports.getProjectById = catchAsync(async (req, res, next) => {
+  const project = await Projects.findById(req.params.id);
 
-exports.updateProject = async (req, res) => {
-  try {
-    const project = await Projects.findByIdAndUpdate(req.params.id, req.body, { new: true });
-    res.status(200).json(project);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
+  if (!project) return next(new AppError("No project with such id", 404));
 
-exports.deleteProject = async (req, res) => {
-  try {
-    await Projects.findByIdAndDelete(req.params.id);
-    res.status(204).end();
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
+  res.status(200).json(project);
+});
+
+exports.updateProject = catchAsync(async (req, res, next) => {
+  const project = await Projects.findByIdAndUpdate(req.params.id, req.body, {
+    new: true,
+    runValidators: true,
+  });
+
+  if (!project) return next(new AppError("No project with such id", 404));
+
+  res.status(200).json(project);
+});
+
+exports.deleteProject = catchAsync(async (req, res, next) => {
+  const project = await Projects.findByIdAndDelete(req.params.id);
+
+  if (!project) return next(new AppError("No project with such id", 404));
+
+  res.status(204).json({
+    status: "deleted",
+    data: null,
+  });
+});
