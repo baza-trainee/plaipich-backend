@@ -1,6 +1,7 @@
 const Projects = require("../models/projectsModel");
 const catchAsync = require("../utils/cathAsync");
 const AppError = require("../utils/appError");
+const APIFeatures = require("../utils/apiFeatures");
 
 exports.createProject = catchAsync(async (req, res) => {
   const project = await Projects.create(req.body);
@@ -8,8 +9,18 @@ exports.createProject = catchAsync(async (req, res) => {
 });
 
 exports.getAllProjects = catchAsync(async (req, res) => {
-  const projects = await Projects.find();
-  res.status(200).json(projects);
+  const features = new APIFeatures(Projects.find(), req.query)
+    .filter()
+    .sort()
+    .paginate()
+    .limitFields();
+
+  const projects = await features.query;
+  res.status(200).json({
+    status: "success",
+    results: projects.length,
+    data: { projects },
+  });
 });
 
 exports.getProjectById = catchAsync(async (req, res, next) => {

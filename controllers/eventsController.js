@@ -1,6 +1,7 @@
 const Events = require("../models/eventsModel");
 const catchAsync = require("../utils/cathAsync");
 const AppError = require("../utils/appError");
+const APIFeatures = require("../utils/apiFeatures");
 
 exports.createEvent = catchAsync(async (req, res) => {
   const event = await Events.create(req.body);
@@ -8,8 +9,18 @@ exports.createEvent = catchAsync(async (req, res) => {
 });
 
 exports.getAllEvents = catchAsync(async (req, res) => {
-  const events = await Events.find();
-  res.status(200).json(events);
+  const features = new APIFeatures(Events.find(), req.query)
+    .filter()
+    .sort()
+    .paginate()
+    .limitFields();
+
+  const events = await features.query;
+  res.status(200).json({
+    status: "success",
+    results: events.length,
+    data: { events },
+  });
 });
 
 exports.getEventById = catchAsync(async (req, res, next) => {

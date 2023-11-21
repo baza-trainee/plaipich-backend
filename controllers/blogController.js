@@ -1,6 +1,7 @@
 const Blog = require("../models/blogModel");
 const catchAsync = require("../utils/cathAsync");
 const AppError = require("../utils/appError");
+const APIFeatures = require("../utils/apiFeatures");
 
 exports.createBlogPost = catchAsync(async (req, res) => {
   const blogPost = await Blog.create(req.body);
@@ -8,8 +9,19 @@ exports.createBlogPost = catchAsync(async (req, res) => {
 });
 
 exports.getAllBlogPosts = catchAsync(async (req, res) => {
-  const blogPosts = await Blog.find();
-  res.status(200).json(blogPosts);
+  const features = new APIFeatures(Blog.find(), req.query)
+    .filter()
+    .sort()
+    .paginate()
+    .limitFields();
+
+  const blogPosts = await features.query;
+
+  res.status(200).json({
+    status: "success",
+    results: blogPosts.length,
+    data: { blogPosts },
+  });
 });
 
 exports.getBlogPostById = catchAsync(async (req, res, next) => {
