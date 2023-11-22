@@ -3,6 +3,9 @@ const morgan = require("morgan");
 const globalErrorHandler = require("./controllers/errorController");
 const AppError = require("./utils/appError");
 const cors = require("cors");
+const dotenv = require("dotenv");
+
+dotenv.config({ path: `./.env` });
 
 const app = express();
 if (process.env.NODE_ENV === "development") {
