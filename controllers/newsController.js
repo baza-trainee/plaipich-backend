@@ -2,7 +2,6 @@ const News = require("../models/newsModel");
 const catchAsync = require("../utils/cathAsync");
 const AppError = require("../utils/appError");
 const APIFeatures = require("../utils/apiFeatures");
-const http = require("http");
 
 exports.createNews = catchAsync(async (req, res) => {
   const news = await News.create(req.body);
@@ -12,7 +11,7 @@ exports.createNews = catchAsync(async (req, res) => {
 exports.getAllNews = async (req, res) => {
   const features = new APIFeatures(News.find(), req.query)
     .filter()
-    .sort()
+    .sort('-date')
     .paginate()
     .limitFields();
 
