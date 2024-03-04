@@ -2,17 +2,29 @@ const Projects = require("../models/projectsModel");
 const catchAsync = require("../utils/cathAsync");
 const AppError = require("../utils/appError");
 const APIFeatures = require("../utils/apiFeatures");
+const uploadImage = require("../utils/upload-image");
 
 exports.createProject = catchAsync(async (req, res) => {
-  const project = await Projects.create(req.body);
-  res.status(201).json(project);
+  console.log(req.files);
+  // const url = await uploadImage(req.files[0]);
+  // console.log(url);
+
+  // const project = await Projects.create(req.body);
+  res.status(201).json({ tile: "good" });
 });
 
 exports.getAllProjects = catchAsync(async (req, res) => {
   const features = new APIFeatures(
     Projects.find(
       {},
-      { poster: 1, title: 1, enTitle: 1, description: 1, enDescription: 1, status: 1 }
+      {
+        poster: 1,
+        title: 1,
+        enTitle: 1,
+        description: 1,
+        enDescription: 1,
+        status: 1,
+      }
     ),
     req.query
   )

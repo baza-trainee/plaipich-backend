@@ -1,15 +1,23 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const projectsController = require('../controllers/projectsController');
+const projectsController = require("../controllers/projectsController");
+const multer = require("multer");
 
-router.post('/projects', projectsController.createProject);
+const storage = multer.memoryStorage();
+const upload = multer({ storage });
 
-router.get('/projects', projectsController.getAllProjects);
+router.post(
+  "/projects",
+  upload.array("files"),
+  projectsController.createProject
+);
 
-router.get('/projects/:id', projectsController.getProjectById);
+router.get("/projects", projectsController.getAllProjects);
 
-router.put('/projects/:id', projectsController.updateProject);
+router.get("/projects/:id", projectsController.getProjectById);
 
-router.delete('/projects/:id', projectsController.deleteProject);
+router.put("/projects/:id", projectsController.updateProject);
+
+router.delete("/projects/:id", projectsController.deleteProject);
 
 module.exports = router;
