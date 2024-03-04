@@ -9,7 +9,13 @@ exports.createProject = catchAsync(async (req, res) => {
 });
 
 exports.getAllProjects = catchAsync(async (req, res) => {
-  const features = new APIFeatures(Projects.find(), req.query)
+  const features = new APIFeatures(
+    Projects.find(
+      {},
+      { poster: 1, title: 1, enTitle: 1, description: 1, enDescription: 1, status: 1 }
+    ),
+    req.query
+  )
     .filter()
     .sort()
     .paginate()
@@ -24,7 +30,7 @@ exports.getAllProjects = catchAsync(async (req, res) => {
 });
 
 exports.getProjectById = catchAsync(async (req, res, next) => {
-  const project = await Projects.findById(req.params.id).populate('events');
+  const project = await Projects.findById(req.params.id);
 
   if (!project) return next(new AppError("No project with such id", 404));
 

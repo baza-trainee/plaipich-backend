@@ -11,17 +11,16 @@ class APIFeatures {
 
     let queryStr = JSON.stringify(queryObj);
     queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
-    this.query = this.query.find(JSON.parse(queryStr));
+    this.query = this.query.find();
 
     return this;
   }
 
-  sort() {
-    if (this.queryString.sort) {
-      const sortBy = this.queryString.sort.split(",").join(" ");
-      this.query = this.query.sort(sortBy);
+  sort(query) {
+    if (query) {
+      this.query = this.query.sort(query);
     } else {
-      this.query = this.query.sort("-createdAt");
+      this.query = this.query.sort("-createdAt -updatedAt");
     }
     return this;
   }
