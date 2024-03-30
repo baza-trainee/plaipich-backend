@@ -4,16 +4,27 @@ const AppError = require("../utils/appError");
 const APIFeatures = require("../utils/apiFeatures");
 
 exports.createProject = catchAsync(async (req, res) => {
-  const project = await Projects.create(req.body);
-  res.status(201).json(project);
+  if (req.user) {
+    const project = await Projects.create(req.body);
+    res.status(201).json(project);
+  } else {
+    res.status(401).json("Не авторизований користувач!");
+  }
 });
 
 exports.getAllProjects = catchAsync(async (req, res) => {
+  const searchReq = req.user ? {} : { publicStatus: true };
+
   const features = new APIFeatures(
-    Projects.find(
-      {},
-      { poster: 1, title: 1, enTitle: 1, description: 1, enDescription: 1, status: 1 }
-    ),
+    Projects.find(searchReq, {
+      publicStatus: 1,
+      poster: 1,
+      title: 1,
+      enTitle: 1,
+      description: 1,
+      enDescription: 1,
+      status: 1,
+    }),
     req.query
   )
     .filter()
@@ -38,23 +49,31 @@ exports.getProjectById = catchAsync(async (req, res, next) => {
 });
 
 exports.updateProject = catchAsync(async (req, res, next) => {
-  const project = await Projects.findByIdAndUpdate(req.params.id, req.body, {
-    new: true,
-    runValidators: true,
-  });
+  if (req.user) {
+    const project = await Projects.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+      runValidators: true,
+    });
 
-  if (!project) return next(new AppError("No project with such id", 404));
+    if (!project) return next(new AppError("No project with such id", 404));
 
-  res.status(200).json(project);
+    res.status(200).json(project);
+  } else {
+    res.status(401).json("Не авторизований користувач!");
+  }
 });
 
 exports.deleteProject = catchAsync(async (req, res, next) => {
-  const project = await Projects.findByIdAndDelete(req.params.id);
+  if (req.user) {
+    const project = await Projects.findByIdAndDelete(req.params.id);
 
-  if (!project) return next(new AppError("No project with such id", 404));
+    if (!project) return next(new AppError("No project with such id", 404));
 
-  res.status(204).json({
-    status: "deleted",
-    data: null,
-  });
+    res.status(204).json({
+      status: "deleted",
+      data: null,
+    });
+  } else {
+    res.status(401).json("Не авторизований користувач!");
+  }
 });

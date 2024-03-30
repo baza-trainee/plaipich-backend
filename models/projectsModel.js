@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 
 const projectsSchema = new mongoose.Schema({
+  publicStatus: { type: Boolean, default: false },
   title: { type: String, required: true },
   description: { type: String, required: true },
   status: {
@@ -47,7 +48,7 @@ const projectsSchema = new mongoose.Schema({
   locations: {
     title: { type: String },
     enTitle: { type: String },
-    text: { type: String},
+    text: { type: String },
     enText: { type: String },
     link: { type: String },
   },
