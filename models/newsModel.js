@@ -1,7 +1,8 @@
 const mongoose = require("mongoose");
-const category = require("../commons/constants.js")
+const category = require("../commons/constants.js");
 
 const newsSchema = new mongoose.Schema({
+  publicStatus: { type: Boolean, default: false },
   title: { type: String, required: true },
   description: { type: String, required: true },
   date: { type: Date, default: Date.now },

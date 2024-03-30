@@ -4,14 +4,19 @@ const AppError = require("../utils/appError");
 const APIFeatures = require("../utils/apiFeatures");
 
 exports.createNews = catchAsync(async (req, res) => {
-  const news = await News.create(req.body);
-  res.status(201).json(news);
+  if (req.user) {
+    const news = await News.create(req.body);
+    res.status(201).json(news);
+  } else {
+    res.status(401).json("Не авторизований користувач!");
+  }
 });
 
 exports.getAllNews = async (req, res) => {
-  const features = new APIFeatures(News.find(), req.query)
+  const searchReq = req.user ? {} : { publicStatus: true };
+  const features = new APIFeatures(News.find(searchReq), req.query)
     .filter()
-    .sort('-date')
+    .sort("-date")
     .paginate()
     .limitFields();
 
@@ -31,23 +36,31 @@ exports.getNewsById = catchAsync(async (req, res, next) => {
 });
 
 exports.updateNews = catchAsync(async (req, res, next) => {
-  const news = await News.findByIdAndUpdate(req.params.id, req.body, {
-    new: true,
-    runValidators: true,
-  });
+  if (req.user) {
+    const news = await News.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+      runValidators: true,
+    });
 
-  if (!news) return next(new AppError("No news with such id", 404));
+    if (!news) return next(new AppError("No news with such id", 404));
 
-  res.status(200).json(news);
+    res.status(200).json(news);
+  } else {
+    res.status(401).json("Не авторизований користувач!");
+  }
 });
 
 exports.deleteNews = catchAsync(async (req, res, next) => {
-  const news = await News.findByIdAndDelete(req.params.id);
+  if (req.user) {
+    const news = await News.findByIdAndDelete(req.params.id);
 
-  if (!news) return next(new AppError("No news with such id", 404));
+    if (!news) return next(new AppError("No news with such id", 404));
 
-  res.status(204).json({
-    status: "deleted",
-    data: null,
-  });
+    res.status(204).json({
+      status: "deleted",
+      data: null,
+    });
+  } else {
+    res.status(401).json("Не авторизований користувач!");
+  }
 });

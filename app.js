@@ -17,12 +17,13 @@ const corsOptions = {
   methods: "GET,POST,PATCH,PUT,DELETE",
 };
 
-app.use(cors(corsOptions));
+app.use(cors());
 app.use(express.json());
 app.use(express.static(`${__dirname}/public`));
 
 app.use("/api", require("./routes/news.route"));
 app.use("/api", require("./routes/projects.route"));
+app.use("/api", require("./routes/user.route"));
 
 app.all("*", (req, res, next) => {
   next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
