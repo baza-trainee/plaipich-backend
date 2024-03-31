@@ -20,7 +20,6 @@ const authenticate = async (req, res, next) => {
       const user = await User.findById(id);
       if (!user || !user.token || user.token !== token) {
         req.myError = 401;
-
         next();
       } else {
         req.user = user;
