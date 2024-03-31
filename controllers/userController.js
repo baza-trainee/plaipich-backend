@@ -5,8 +5,8 @@ const createTokens = require("../utils/createToken");
 exports.checkUser = catchAsync(async (req, res) => {
   const user = await User.find(req.body);
   const token = createTokens(user._id);
-  await User.findByIdAndUpdate(user._id, { ...token });
-  res.status(201).json({ ...token });
+  const updatedUser = await User.findByIdAndUpdate(user._id, { ...token });
+  res.status(201).json(updatedUser);
 });
 
 exports.getUser = async (req, res) => {
