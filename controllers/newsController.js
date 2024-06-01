@@ -13,8 +13,8 @@ exports.createNews = catchAsync(async (req, res) => {
 });
 
 exports.getAllNews = async (req, res) => {
-  const searchReq = req.user ? {} : { publicStatus: true };
-  const features = new APIFeatures(News.find(searchReq), req.query)
+  const searchReq = req.query.all ? {} : { publicStatus: true };
+  const features = new APIFeatures(News.find(), searchReq)
     .filter()
     .sort("-date")
     .paginate()
