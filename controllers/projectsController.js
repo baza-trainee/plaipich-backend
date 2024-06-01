@@ -13,7 +13,7 @@ exports.createProject = catchAsync(async (req, res) => {
 });
 
 exports.getAllProjects = catchAsync(async (req, res) => {
-  const searchReq = req.user ? {} : { publicStatus: true };
+  const searchReq = req.query.all ? {} : { publicStatus: true };
 
   const features = new APIFeatures(
     Projects.find(searchReq, {
@@ -25,7 +25,7 @@ exports.getAllProjects = catchAsync(async (req, res) => {
       enDescription: 1,
       status: 1,
     }),
-    req.query
+    searchReq
   )
     .filter()
     .sort()
