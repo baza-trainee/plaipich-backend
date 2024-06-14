@@ -1,6 +1,7 @@
 const User = require("../models/userModel");
 const catchAsync = require("../utils/cathAsync");
 const createTokens = require("../utils/createToken");
+const sendEmail = require("../utils/sendEmail");
 
 exports.checkUser = catchAsync(async (req, res) => {
   const user = await User.findOne(req.body);
@@ -30,3 +31,15 @@ exports.updateUser = catchAsync(async (req, res, next) => {
     res.status(401).json("Не авторизований користувач!");
   }
 });
+
+exports.resetPassword = async (req, res) => {
+  const user = await User.findOne({ email: req.body.email });
+
+  await sendEmail({ email: user.email, password: user.password });
+
+  res
+    .status(200)
+    .json({
+      "message": "Ваш пароль був відправлений на пошту goPlai2024@gmail.com .",
+    });
+};

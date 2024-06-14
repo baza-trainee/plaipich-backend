@@ -9,4 +9,6 @@ router.get("/user", authenticate, userController.getUser);
 
 router.patch("/user", authenticate, userController.updateUser);
 
+router.post("/reset-password", userController.resetPassword);
+
 module.exports = router;
