@@ -1,10 +1,13 @@
-const sgMail = require("@sendgrid/mail");
+const { MailtrapClient } = require("mailtrap");
 
-const { SENDGRID_KEY } = process.env;
+const { MAIL_KEY } = process.env;
 
-sgMail.setApiKey(SENDGRID_KEY || "");
+const TOKEN = MAIL_KEY || "";
+const ENDPOINT = "https://send.api.mailtrap.io/";
 
-const mailTemplate = ({ password }) => `<!DOCTYPE html>
+const client = new MailtrapClient({ endpoint: ENDPOINT, token: TOKEN });
+
+const mailTemplate = ({ password, email }) => `<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -62,7 +65,7 @@ const mailTemplate = ({ password }) => `<!DOCTYPE html>
             <p>Dear PLAI,</p>
             <p>I hope this email finds you well.</p>
             <p>As requested, below are the details of your new account password. For your security, please change your password after your initial login.</p>
-            <p><strong>Username:</strong> goplai2024@gmail.com</p>
+            <p><strong>Username:</strong> ${email}</p>
             <p><strong>Password:</strong> ${password}</p>
             <p>To ensure the safety and security of your account, please follow these guidelines:</p>
             <ul>
@@ -84,20 +87,25 @@ const mailTemplate = ({ password }) => `<!DOCTYPE html>
   </html>`;
 
 const sendEmail = ({ email, password }) => {
-  const forgotPassword = {
-    to: email,
-    subject: "Password",
-    html: mailTemplate({ password }),
+  const sender = {
+    email: "mailtrap@demomailtrap.com",
+    name: "Password for Plai website",
   };
+  const recipients = [
+    {
+      email: "goplai2024@gmail.com",
+    },
+  ];
 
-  sgMail
-    .send({ ...forgotPassword, from: "geri-grej2023@rambler.ru" })
-    .then(() => {
-      console.log("Email sent");
+  client
+    .send({
+      from: sender,
+      to: recipients,
+      subject: "You are awesome!",
+      html: mailTemplate({ password, email }),
+      category: "Integration Test",
     })
-    .catch((error) => {
-      console.error(error);
-    });
+    .then(console.log, console.error);
 };
 
 module.exports = sendEmail;
